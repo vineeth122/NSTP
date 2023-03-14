@@ -1,0 +1,145 @@
+// NSTPv4
+
+syntax = "proto3";
+
+message NSTPMessage {
+    oneof message_ {
+        ClientHello client_hello = 1;
+        ServerHello server_hello = 2;
+        ErrorMessage error_message = 3;
+        EncryptedMessage encrypted_message = 4;
+    }
+}
+
+message ClientHello {
+    uint32 major_version = 1;
+    uint32 minor_version = 2;
+    string user_agent = 3;
+    Certificate certificate = 4;
+    CertificateStatusResponse certificate_status = 5;
+}
+
+message ServerHello {
+    uint32 major_version = 1;
+    uint32 minor_version = 2;
+    string user_agent = 3;
+    Certificate certificate = 4;
+    CertificateStatusResponse certificate_status = 5;
+}
+
+message ErrorMessage {
+    string error_message = 1;
+}
+
+message PingRequest {
+    bytes data = 1;
+    HashAlgorithm hash_algorithm = 2;
+}
+
+message PingResponse {
+    bytes hash = 1;
+}
+
+message LoadRequest {
+    string key = 1;
+    bool public = 2;
+}
+
+message LoadResponse {
+    bytes value = 1;
+}
+
+message StoreRequest {
+    string key = 1;
+    bytes value = 2;
+    bool public = 3;
+}
+
+message StoreResponse {
+    bytes hash = 1;
+    HashAlgorithm hash_algorithm = 2;
+}
+
+message EncryptedMessage {
+    bytes ciphertext = 1;
+    bytes nonce = 2;
+}
+
+message DecryptedMessage {
+    oneof message_ {
+        ErrorMessage error_message = 1;
+        PingRequest ping_request = 2;
+        PingResponse ping_response = 3;
+        LoadRequest load_request = 4;
+        LoadResponse load_response = 5;
+        StoreRequest store_request = 6;
+        StoreResponse store_response = 7;
+    }
+}
+
+enum HashAlgorithm {
+    IDENTITY = 0;
+    SHA256 = 1;
+    SHA512 = 2;
+}
+
+message CertificateStore {
+    repeated Certificate certificates = 1;
+}
+
+message Certificate {
+    repeated string subjects = 1;
+    uint64 valid_from = 2;
+    uint32 valid_length = 3;
+    repeated CertificateUsage usages = 4;
+    bytes encryption_public_key = 5;
+    bytes signing_public_key = 6;
+    CertificateHash issuer = 7;
+    bytes issuer_signature = 8;
+}
+
+enum CertificateUsage {
+    CERTIFICATE_SIGNING = 0;
+    CLIENT_AUTHENTICATION = 1;
+    SERVER_AUTHENTICATION = 2;
+    STATUS_SIGNING = 3;
+}
+
+message CertificateHash {
+    bytes value = 1;
+    HashAlgorithm algorithm = 2;
+}
+
+message PrivateKey {
+    CertificateHash certificate = 1;
+    bytes encryption_private_key = 2;
+    bytes signing_private_key = 3;
+}
+
+message CertificateStatusRequest {
+    CertificateHash certificate = 1;
+}
+
+message CertificateStatusResponse {
+    CertificateHash certificate = 1;
+    CertificateStatus status = 2;
+    uint64 valid_from = 3;
+    uint32 valid_length = 4;
+    Certificate status_certificate = 5;
+    bytes status_signature = 6;
+}
+
+enum CertificateStatus {
+    UNKNOWN = 0;
+    VALID = 1;
+    REVOKED = 2;
+}
+
+message PinnedCertificateStore {
+    repeated PinnedCertificate pinned_certificates = 1;
+}
+
+message PinnedCertificate {
+    string subject = 1;
+    CertificateHash certificate = 2;
+}
