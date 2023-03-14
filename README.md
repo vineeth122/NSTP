@@ -1,6 +1,5 @@
 # NSTP
-
-This project was a part of a submission to the cybersecurity course CY6740 Network Security. The goal of the project was to understand trust relationships between PKI participants, learn to detect and mitigate attacks against PKI. The assignment required students to implement TLS-style secure transport layer for TCP connections. 
+ 
 
 Here we are trying to replicate the Network Security Transport Protocol (NSTP) that uses a Public Key Infrastructure (PKI) to authenticate participants allowing access to a centralized key-value store. Each participant uses a local certificate authority database and online certificate status servers to verify the identity of peers.
 
